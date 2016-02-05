@@ -15,7 +15,8 @@ struct palabra
 //Función que crea un nuevo nodo para una lista de palabras
 //@return: puntero al nodo creado
 
-palabra* nuevoNodo(char valor[30]){
+palabra* nuevoNodo(char valor[30])
+{
     palabra* nodo = new palabra;
     strcpy(nodo -> pal, valor);
     nodo -> freq = 1;
@@ -39,6 +40,14 @@ int main()
 {
     ifstream archivo('ruta.txt', ios::binary);
     
+    char c[30];
+    
+    //Inicialización de la lista que almacenará todas las palabras
+    //presentes en el documento.
+    archivo >> c;
+    palabra* lista_palabras = PalabraList(c)
+    
+    archivo.close();
     
     return 0;
 }
