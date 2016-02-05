@@ -12,13 +12,24 @@ struct palabra
     palabra* sig = NULL;
 }
 
-//Función para definir una nueva lista de palabras
-//retorna un puntero al primer elemento
+//Función que crea un nuevo nodo para una lista de palabras
+//@return: puntero al nodo creado
+
+palabra* nuevoNodo(char valor[30]){
+    palabra* nodo = new palabra;
+    strcpy(nodo -> pal, valor);
+    nodo -> freq = 1;
+    
+    return nodo;
+}
+
+
+//Función para inicializar una nueva lista de palabras
+//@return: puntero al que será el primer elemento
 
 palabra* PalabraList(char valor[30])
 {
-    palabra* inicio = new palabra();
-    inicio -> pal = valor;
+    palabra* inicio = nuevoNodo(valor);
     return  inicio;
 }
 
