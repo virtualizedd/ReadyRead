@@ -81,6 +81,18 @@ palabra* insert_alfabetico(palabra* lista, char valor[30]){
     }
 }
 
+//Función que convierte a minúsculas todos los carácteres de un array
+//@return: <void>
+
+void palabraMinusculas(char p[30])
+{
+    short int i = 0;
+    while(p[i]){
+        p[i] = tolower(p[i]);
+        i++;
+    }
+}
+
 
 //Función que construye una lista enlazada de nodos palabras en orden alfabético
 //a partir del contenido de un archivo de texto.
@@ -93,9 +105,12 @@ palabra* ConstruirLista(char ruta[255])
     char c[30];
     archivo >> c;
     
+    palabraMinusculas(c);
+    
     palabra* nueva_lista = PalabraList(c);
     
     while(archivo >> c){
+        palabraMinusculas(c);
         nueva_lista = insert_alfabetico(nueva_lista, c);
     }
     
