@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 #include <string.h>
 
 using namespace std;
@@ -111,10 +112,30 @@ void menuInicio(char ruta[255])
     cout << "|||||| ReadyRead v.0.0.1 - inspector de archivos |||||||||||||||||\n"
          << "------------------------------------------------------------------\n"
          << "                                                                  \n"
-         << "Ingrese la ruta del archivo que desea analizar:                  \n"
+         << "Ingrese la ruta del archivo que desea analizar:                   \n"
          << ">>> ";
     
     cin >> ruta;
+    
+    cout << "\n\n";
+}
+
+//Función que imprime una tabla con todas las palabras de una lista junto
+//a su frecuencia.
+//@return: <void>
+
+void imprimirTablaPalabras(palabra* lista)
+{
+    cout << "          palabra          ||  frecuencia   \n"
+         << "============================================\n";
+         
+    while(lista  != NULL){
+        cout << setw(30) << setfill(' ') << left << lista -> pal
+             << "     "  << lista -> freq << "\n"
+             << "--------------------------------------------\n";
+        lista = lista -> sig;
+    }
+    
 }
          
 // -- MAIN --
@@ -127,7 +148,7 @@ int main()
     
     palabra* lista_palabras = ConstruirLista(ruta_archivo);
     
-    cout << ruta_archivo;
+    imprimirTablaPalabras(lista_palabras);
     
     return 0;
 }
