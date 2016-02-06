@@ -34,11 +34,58 @@ palabra* PalabraList(char valor[30])
     return  inicio;
 }
 
+//Función que inserta un elemento respetando un orden alfabetico
+//Si el valor ya se encuentra en la lista, aumenta en uno su atributo freq
+//@return: un puntero al inicio de la lista
+palabra* insert_alfabetico(palabra* lista, char valor[30]){
+     
+    int comparacion = strcmp(lista -> pal, valor);
+    
+    if(comparacion == 0){
+        lista -> freq += 1;
+        return lista;
+    }
+    else if(comparacion > 0){
+        palabra* nuevo = nuevoNodo(valor);
+        nuevo -> sig = lista;
+        return nuevo;
+    }
+    else{
+        palabra* inicio = lista;
+        palabra* anterior = lista;
+        lista = lista -> sig;
+        
+        while(lista != NULL){
+            comparacion = strcmp(lista -> pal, valor);
+            
+            if(comparacion == 0){
+                   lista -> freq += 1; 
+                   return inicio;
+            }
+            else if(comparacion > 0){
+                palabra* nuevo = nuevoNodo(valor);
+                
+                nuevo -> sig = lista;
+                anterior -> sig = nuevo;
+                return inicio;
+            }
+            
+            anterior = lista;
+            lista = lista -> sig;
+        }
+        
+        palabra* nuevo = nuevoNodo(valor);
+        anterior -> sig = nuevo;
+        return inicio;
+    }
+}
+
+
 //Función que construye una lista enlazada de nodos palabras en orden alfabético
 //a partir del contenido de un archivo de texto.
 //@return: puntero al inicio de la lista
 
-/*palabra* ConstruirLista(char ruta[255])
+palabra* ConstruirLista(char ruta[255])
 {
     ifstream archivo(ruta, ios::binary);
     
@@ -47,8 +94,14 @@ palabra* PalabraList(char valor[30])
     
     palabra* nueva_lista = PalabraList(c);
     
+    while(archivo >> c){
+        nueva_lista = insert_alfabetico(nueva_lista, c);
+    }
+    
     archivo.close();
-}*/
+    
+    return nueva_lista;
+}
 
 //Función que genera un menú de inicio y pide al usuario la ruta del archivo
 //@return: <void>
@@ -71,6 +124,8 @@ int main()
     char ruta_archivo[255];
     
     menuInicio(ruta_archivo);
+    
+    palabra* lista_palabras = ConstruirLista(ruta_archivo);
     
     cout << ruta_archivo;
     
