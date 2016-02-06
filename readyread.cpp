@@ -81,16 +81,40 @@ palabra* insert_alfabetico(palabra* lista, char valor[30]){
     }
 }
 
+//Función que verifica si un carácter corresponde a un signo de puntuación
+//@return: booleano
+
+bool esSigno(char c)
+{
+    char signos[30] = "\"',;.()[]{}#:-_¡!¿?";
+    short int i = 0;
+    
+    while(signos[i])
+    {
+        if(signos[i] == c) return true;
+        i++;
+    }
+    
+    return false;
+}
+
 //Función que convierte a minúsculas todos los carácteres de un array
 //@return: <void>
 
-void palabraMinusculas(char p[30])
+void formatearPalabra(char p[30])
 {
-    short int i = 0;
+    short int i, j = 0;
+    char formato[30] = "";
+    
     while(p[i]){
-        p[i] = tolower(p[i]);
+        if(!esSigno(p[i])){
+            formato[j] = tolower(p[i]);
+            j++;
+        }
         i++;
     }
+    
+    strcpy(p, formato);
 }
 
 
@@ -105,12 +129,12 @@ palabra* ConstruirLista(char ruta[255])
     char c[30];
     archivo >> c;
     
-    palabraMinusculas(c);
+    formatearPalabra(c);
     
     palabra* nueva_lista = PalabraList(c);
     
     while(archivo >> c){
-        palabraMinusculas(c);
+        formatearPalabra(c);
         nueva_lista = insert_alfabetico(nueva_lista, c);
     }
     
