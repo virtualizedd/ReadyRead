@@ -8,9 +8,9 @@ using namespace std;
 struct palabra
 {
     char pal[30];
-    int frq;
+    int freq;
     palabra* sig = NULL;
-}
+};
 
 //Función que crea un nuevo nodo para una lista de palabras
 //@return: puntero al nodo creado
@@ -38,14 +38,14 @@ palabra* PalabraList(char valor[30])
 
 int main()
 {
-    ifstream archivo('ruta.txt', ios::binary);
+    ifstream archivo("ruta.txt", ios::binary);
     
     char c[30];
     
     //Inicialización de la lista que almacenará todas las palabras
     //presentes en el documento.
     archivo >> c;
-    palabra* lista_palabras = PalabraList(c)
+    palabra* lista_palabras = PalabraList(c);
     
     archivo.close();
     
