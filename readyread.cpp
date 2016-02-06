@@ -138,6 +138,8 @@ palabra* ConstruirLista(char ruta[255])
         nueva_lista = insert_alfabetico(nueva_lista, c);
     }
     
+    cout << "El archivo se ha leído correctamente.";
+    
     archivo.close();
     
     return nueva_lista;
@@ -175,6 +177,49 @@ void imprimirTablaPalabras(palabra* lista)
         lista = lista -> sig;
     }
     
+    cout << "\n\n";
+    
+}
+
+//Función que imprime un menú con las distintas funcionalidades que ofrece
+//el programa
+
+void menuOpciones(palabra* lista)
+{
+    while(true){
+        cout << "¿Qué deseas hacer?\n\n"
+             << "   [1] Listar todas las palabras presentes en el archivo\n"
+             << "       junto a su frecuencia de aparición\n"
+             << "   [2] Saber cuáles son las palabras más y menos frecuentes                  \n"
+             << "   [3] Saber cuáles son las palabras con mayor y menor número de carácteres  \n"
+             << "   [n] Ingresar una nueva ruta \n"
+             << "   [x] Salir de la aplicación \n\n"
+             << "Ingresa el [<codigo>] listado a la izquierda de la opción que deseas ejecutar\n"
+             << ">>> ";
+        char opcion;
+        
+        cin >> opcion;
+        
+        cout << "\n\n";
+        
+        if(opcion == 'x')  break;
+        else if(opcion == 'n'){
+        }
+        else if(opcion == '1') imprimirTablaPalabras(lista);
+        
+        cout << "¿Deseas realizar una nueva operación sobre este archivo?\n"
+             << "[s]i    [m]e gustaria analizar otro archivo    [n]o, quiero salir del programa \n"
+             << ">>> ";
+             
+       cin >> opcion;
+       
+       if(opcion == 's') cout << "\n\n";
+       else if(opcion == 'm'){
+       }
+       else break;
+       
+       
+    }
 }
          
 // -- MAIN --
@@ -187,7 +232,7 @@ int main()
     
     palabra* lista_palabras = ConstruirLista(ruta_archivo);
     
-    imprimirTablaPalabras(lista_palabras);
+    menuOpciones(lista_palabras);
     
     return 0;
 }
