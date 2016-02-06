@@ -34,20 +34,45 @@ palabra* PalabraList(char valor[30])
     return  inicio;
 }
 
+//Función que construye una lista enlazada de nodos palabras en orden alfabético
+//a partir del contenido de un archivo de texto.
+//@return: puntero al inicio de la lista
+
+/*palabra* ConstruirLista(char ruta[255])
+{
+    ifstream archivo(ruta, ios::binary);
+    
+    char c[30];
+    archivo >> c;
+    
+    palabra* nueva_lista = PalabraList(c);
+    
+    archivo.close();
+}*/
+
+//Función que genera un menú de inicio y pide al usuario la ruta del archivo
+//@return: <void>
+
+void menuInicio(char ruta[255])
+{
+    cout << "|||||| ReadyRead v.0.0.1 - inspector de archivos |||||||||||||||||\n"
+         << "------------------------------------------------------------------\n"
+         << "                                                                  \n"
+         << "Ingrese la ruta del archivo que desea analizar:                  \n"
+         << ">>> ";
+    
+    cin >> ruta;
+}
+         
 // -- MAIN --
 
 int main()
 {
-    ifstream archivo("ruta.txt", ios::binary);
+    char ruta_archivo[255];
     
-    char c[30];
+    menuInicio(ruta_archivo);
     
-    //Inicialización de la lista que almacenará todas las palabras
-    //presentes en el documento.
-    archivo >> c;
-    palabra* lista_palabras = PalabraList(c);
-    
-    archivo.close();
+    cout << ruta_archivo;
     
     return 0;
 }
