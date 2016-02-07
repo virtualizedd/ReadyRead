@@ -228,20 +228,36 @@ void menuInicio(char ruta[255])
 //a su frecuencia.
 //@return: <void>
 
-void imprimirTablaPalabras(arbol* abo)
-{
-    cout << "          palabra          ||  frecuencia   \n"
-         << "============================================\n";
-         
-    while(abo -> lista  != NULL){
-        cout << setw(30) << setfill(' ') << left << abo -> lista -> pal
-             << "     "  <<  abo -> lista -> freq << "\n"
+void imprimirListaPalabras(palabra* lista)
+{      
+    while(lista  != NULL){
+        cout << " " << setw(30) << setfill(' ') << left <<  lista -> pal
+             << "     "  <<  lista -> freq << "\n"
              << "--------------------------------------------\n";
-        abo -> lista = abo -> lista -> sig;
+        lista = lista -> sig;
+    }
+}
+
+//Función que recorre un arbol y imprime las listas de palabras de cada nodo
+//en orden alfabético.
+//@return: <void>
+
+void imprimirListasArbol(arbol* abo)
+{
+    if(abo -> ri == NULL)
+    {
+        imprimirListaPalabras(abo -> lista);
+    }
+    else
+    {
+        imprimirListasArbol(abo -> ri);
+        imprimirListaPalabras(abo -> lista);
     }
     
-    cout << "\n\n";
-    
+    if(abo -> rd != NULL)
+    {
+        imprimirListasArbol(abo -> rd);
+    }
 }
 
 //Función que imprime un menú con las distintas funcionalidades que ofrece
@@ -268,7 +284,13 @@ void menuOpciones(arbol* abo)
         if(opcion == 'x')  break;
         else if(opcion == 'n'){
         }
-        else if(opcion == '1') imprimirTablaPalabras();
+        else if(opcion == '1'){
+            cout << "           palabra          ||  frecuencia   \n"
+                 << "============================================\n";
+            imprimirListasArbol(abo);
+            
+            cout << "\n\n";
+        }
         
         cout << "¿Deseas realizar una nueva operación sobre este archivo?\n"
              << "[s]i    [m]e gustaria analizar otro archivo    [n]o, quiero salir del programa \n"
@@ -278,6 +300,7 @@ void menuOpciones(arbol* abo)
        
        if(opcion == 's') cout << "\n\n";
        else if(opcion == 'm'){
+           cout << "\n";
        }
        else break;
        
@@ -296,6 +319,7 @@ int main()
     arbol* arbol_palabras = ConstruirABO(ruta_archivo);
     
     menuOpciones(arbol_palabras);
+
     
     return 0;
 }
