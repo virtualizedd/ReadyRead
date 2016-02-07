@@ -20,7 +20,7 @@ struct arbol
     palabra* lista;
     arbol* ri;
     arbol* rd;
-}
+};
 
 //Función que crea un nuevo nodo para una lista de palabras
 //@return: puntero al nodo creado
@@ -40,7 +40,7 @@ palabra* nuevoNodoPalabra(char valor[30])
 
 palabra* PalabraList(char valor[30])
 {
-    palabra* inicio = nuevoNodo(valor);
+    palabra* inicio = nuevoNodoPalabra(valor);
     return  inicio;
 }
 
@@ -56,7 +56,7 @@ palabra* insert_alfabetico(palabra* lista, char valor[30]){
         return lista;
     }
     else if(comparacion > 0){
-        palabra* nuevo = nuevoNodo(valor);
+        palabra* nuevo = nuevoNodoPalabra(valor);
         nuevo -> sig = lista;
         return nuevo;
     }
@@ -73,7 +73,7 @@ palabra* insert_alfabetico(palabra* lista, char valor[30]){
                    return inicio;
             }
             else if(comparacion > 0){
-                palabra* nuevo = nuevoNodo(valor);
+                palabra* nuevo = nuevoNodoPalabra(valor);
                 
                 nuevo -> sig = lista;
                 anterior -> sig = nuevo;
@@ -84,7 +84,7 @@ palabra* insert_alfabetico(palabra* lista, char valor[30]){
             lista = lista -> sig;
         }
         
-        palabra* nuevo = nuevoNodo(valor);
+        palabra* nuevo = nuevoNodoPalabra(valor);
         anterior -> sig = nuevo;
         return inicio;
     }
@@ -131,12 +131,10 @@ void formatearPalabra(char p[30])
 
 arbol* nuevoNodoArbol(char p[30])
 {   
-    palabra* nueva_lista = new palabra;
-    nueva_lista -> pal = p;
-    nueva_lista -> freq = 1;
+    palabra* nueva_lista = PalabraList(p);
     arbol* nodo = new arbol;
     nodo -> Letra = p[0];
-    nodo -> l = nueva_lista;
+    nodo -> lista = nueva_lista;
     
     return nodo;
 }
@@ -153,15 +151,42 @@ arbol* nuevoArbol(char p[30])
 //Función que inserta un nuevo valor al ABO según corresponda
 //@return: nodo de inicio
 
-arbol* insert_ABO(char p[30])
+arbol* insert_ABO(arbol* abo,char p[30])
 {
+    arbol* inicio = abo;
+    
+    while(true){
+        
+        if(p[0] == abo -> Letra){
+            abo -> lista = insert_alfabetico(abo -> lista, p);
+            break;
+        }
+        else if(p[0] < abo -> Letra){
+            if(abo -> ri == NULL){
+                arbol* nodo = nuevoNodoArbol(p);
+                abo -> ri = nodo;
+                break;
+            }
+            else abo = abo -> ri;
+        }
+        else{
+            if(abo -> rd == NULL){
+                arbol* nodo = nuevoNodoArbol(p);
+                abo -> rd = nodo;
+                break;
+            }
+            else abo = abo -> rd;
+        }
+    }
+    
+    return inicio;
 }
 
 //Función que construye una lista enlazada de nodos palabras en orden alfabético
 //a partir del contenido de un archivo de texto.
 //@return: puntero al inicio de la lista
 
-palabra* ConstruirABO(char ruta[255])
+arbol* ConstruirABO(char ruta[255])
 {
     ifstream archivo(ruta, ios::binary);
     
@@ -180,7 +205,7 @@ palabra* ConstruirABO(char ruta[255])
     
     archivo.close();
     
-    return nueva_lista;
+    return nuevo_arbol;
 }
 
 //Función que genera un menú de inicio y pide al usuario la ruta del archivo
@@ -203,16 +228,16 @@ void menuInicio(char ruta[255])
 //a su frecuencia.
 //@return: <void>
 
-void imprimirTablaPalabras(palabra* lista)
+void imprimirTablaPalabras(arbol* abo)
 {
     cout << "          palabra          ||  frecuencia   \n"
          << "============================================\n";
          
-    while(lista  != NULL){
-        cout << setw(30) << setfill(' ') << left << lista -> pal
-             << "     "  << lista -> freq << "\n"
+    while(abo -> lista  != NULL){
+        cout << setw(30) << setfill(' ') << left << abo -> lista -> pal
+             << "     "  <<  abo -> lista -> freq << "\n"
              << "--------------------------------------------\n";
-        lista = lista -> sig;
+        abo -> lista = abo -> lista -> sig;
     }
     
     cout << "\n\n";
@@ -222,7 +247,7 @@ void imprimirTablaPalabras(palabra* lista)
 //Función que imprime un menú con las distintas funcionalidades que ofrece
 //el programa
 
-void menuOpciones(palabra* lista)
+void menuOpciones(arbol* abo)
 {
     while(true){
         cout << "¿Qué deseas hacer?\n\n"
@@ -243,7 +268,7 @@ void menuOpciones(palabra* lista)
         if(opcion == 'x')  break;
         else if(opcion == 'n'){
         }
-        else if(opcion == '1') imprimirTablaPalabras(lista);
+        else if(opcion == '1') imprimirTablaPalabras();
         
         cout << "¿Deseas realizar una nueva operación sobre este archivo?\n"
              << "[s]i    [m]e gustaria analizar otro archivo    [n]o, quiero salir del programa \n"
@@ -268,9 +293,9 @@ int main()
     
     menuInicio(ruta_archivo);
     
-    palabra* lista_palabras = ConstruirLista(ruta_archivo);
+    arbol* arbol_palabras = ConstruirABO(ruta_archivo);
     
-    menuOpciones(lista_palabras);
+    menuOpciones(arbol_palabras);
     
     return 0;
 }
