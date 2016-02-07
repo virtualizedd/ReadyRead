@@ -167,13 +167,13 @@ void menuInicio(char ruta[255])
 
 void imprimirTablaPalabras(palabra* lista)
 {
-    cout << "          palabra          ||  frecuencia   \n"
-         << "============================================\n";
+    cout << "           palabra          ||  frecuencia   \n"
+         << " ============================================\n";
          
     while(lista  != NULL){
-        cout << setw(30) << setfill(' ') << left << lista -> pal
+        cout << " "<< setw(30) << setfill(' ') << left << lista -> pal
              << "     "  << lista -> freq << "\n"
-             << "--------------------------------------------\n";
+             << " --------------------------------------------\n";
         lista = lista -> sig;
     }
     
