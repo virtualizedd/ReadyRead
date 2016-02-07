@@ -17,7 +17,7 @@ struct palabra
 struct arbol
 {
     char Letra;
-    palabra* lista;
+    palabra* l;
     arbol* ri;
     arbol* rd;
 };
@@ -107,7 +107,8 @@ bool esSigno(char c)
     return false;
 }
 
-//Función que convierte a minúsculas todos los carácteres de un array
+//Función que convierte a minúsculas todos los carácteres de un array y quita
+//los signos de puntuación.
 //@return: <void>
 
 void formatearPalabra(char p[30])
@@ -134,7 +135,7 @@ arbol* nuevoNodoArbol(char p[30])
     palabra* nueva_lista = PalabraList(p);
     arbol* nodo = new arbol;
     nodo -> Letra = p[0];
-    nodo -> lista = nueva_lista;
+    nodo -> l = nueva_lista;
     
     return nodo;
 }
@@ -158,7 +159,7 @@ arbol* insert_ABO(arbol* abo,char p[30])
     while(true){
         
         if(p[0] == abo -> Letra){
-            abo -> lista = insert_alfabetico(abo -> lista, p);
+            abo -> l = insert_alfabetico(abo -> l, p);
             break;
         }
         else if(p[0] < abo -> Letra){
@@ -246,12 +247,12 @@ void imprimirListasArbol(arbol* abo)
 {
     if(abo -> ri == NULL)
     {
-        imprimirListaPalabras(abo -> lista);
+        imprimirListaPalabras(abo -> l);
     }
     else
     {
         imprimirListasArbol(abo -> ri);
-        imprimirListaPalabras(abo -> lista);
+        imprimirListaPalabras(abo -> l);
     }
     
     if(abo -> rd != NULL)
@@ -260,8 +261,85 @@ void imprimirListasArbol(arbol* abo)
     }
 }
 
+//Función que imprime la palabra más frecuente ubicada en una lista del ABO
+//@return: <void>
+
+palabra* masFrecuente(arbol* abo, palabra* maxFreq)
+{
+    
+    if(abo -> ri == NULL)
+    {
+        palabra* lista = abo -> l;
+        while(lista != NULL){
+            if((lista -> freq) >= (maxFreq -> freq)){
+                maxFreq = lista;
+            }
+            lista = lista -> sig;
+        }
+        return maxFreq;
+    }
+ 
+    maxFreq = masFrecuente(abo -> ri, maxFreq);
+        
+    palabra* lista = abo -> l;
+    while(lista != NULL){
+        if((lista -> freq) >= (maxFreq -> freq)){
+            maxFreq = lista;
+        }
+        lista = lista -> sig;
+    }
+    
+    
+    if(abo -> rd != NULL)
+    {
+        maxFreq = masFrecuente(abo -> rd, maxFreq);
+    }
+    
+    return maxFreq;
+    
+}
+
+//Función que imprime la palabra menos frecuente ubicada en una lista del ABO
+//@return: <void>
+
+palabra* menosFrecuente(arbol* abo, palabra* minFreq)
+{
+    
+    if(abo -> ri == NULL)
+    {
+        palabra* lista = abo -> l;
+        while(lista != NULL){
+            if((lista -> freq) < (minFreq -> freq)){
+                minFreq = lista;
+            }
+            lista = lista -> sig;
+        }
+        return minFreq;
+    }
+ 
+    minFreq = menosFrecuente(abo -> ri, minFreq);
+        
+    palabra* lista = abo -> l;
+    while(lista != NULL){
+        if((lista -> freq) < (minFreq -> freq)){
+            minFreq = lista;
+        }
+        lista = lista -> sig;
+    }
+    
+    
+    if(abo -> rd != NULL)
+    {
+        minFreq = menosFrecuente(abo -> rd, minFreq);
+    }
+    
+    return minFreq;
+    
+}
+
+
 //Función que imprime un menú con las distintas funcionalidades que ofrece
-//el programa
+//el programa.
 
 void menuOpciones(arbol* abo)
 {
@@ -279,7 +357,7 @@ void menuOpciones(arbol* abo)
         
         cin >> opcion;
         
-        cout << "\n\n";
+        cout << "\n";
         
         if(opcion == 'x')  break;
         else if(opcion == 'n'){
@@ -291,6 +369,17 @@ void menuOpciones(arbol* abo)
             
             cout << "\n\n";
         }
+        else if(opcion == '2'){
+            palabra* max = abo -> l;
+            palabra* min = abo -> l;
+            max = masFrecuente(abo, max);
+            min = menosFrecuente(abo, min);
+            cout << "La palabra que más aparece en el archivo es \"" << max -> pal <<
+                    "\" (" << max -> freq << " aparicion(es))\n"
+                    "La palabra que menos aparece en el archivo es \"" << min -> pal <<
+                    "\" (" << min -> freq << " aparicion(es))\n\n";
+        }
+            
         
         cout << "¿Deseas realizar una nueva operación sobre este archivo?\n"
              << "[s]i    [m]e gustaria analizar otro archivo    [n]o, quiero salir del programa \n"
