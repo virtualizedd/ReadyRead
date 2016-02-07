@@ -13,10 +13,19 @@ struct palabra
     palabra* sig = NULL;
 };
 
+//Nodo para un árbol binario
+struct arbol
+{
+    char Letra;
+    palabra* lista;
+    arbol* ri;
+    arbol* rd;
+}
+
 //Función que crea un nuevo nodo para una lista de palabras
 //@return: puntero al nodo creado
 
-palabra* nuevoNodo(char valor[30])
+palabra* nuevoNodoPalabra(char valor[30])
 {
     palabra* nodo = new palabra;
     strcpy(nodo -> pal, valor);
@@ -117,25 +126,54 @@ void formatearPalabra(char p[30])
     strcpy(p, formato);
 }
 
+//Función que define un nuevo nodo para un ABO
+//@return: puntero al nodo definido
+
+arbol* nuevoNodoArbol(char p[30])
+{   
+    palabra* nueva_lista = new palabra;
+    nueva_lista -> pal = p;
+    nueva_lista -> freq = 1;
+    arbol* nodo = new arbol;
+    nodo -> Letra = p[0];
+    nodo -> l = nueva_lista;
+    
+    return nodo;
+}
+
+//Función que inicializa un ABO
+//@return: puntero al nodo inicial del árbol
+
+arbol* nuevoArbol(char p[30])
+{
+    arbol* inicio =  nuevoNodoArbol(p);
+    return inicio;
+}
+
+//Función que inserta un nuevo valor al ABO según corresponda
+//@return: nodo de inicio
+
+arbol* insert_ABO(char p[30])
+{
+}
 
 //Función que construye una lista enlazada de nodos palabras en orden alfabético
 //a partir del contenido de un archivo de texto.
 //@return: puntero al inicio de la lista
 
-palabra* ConstruirLista(char ruta[255])
+palabra* ConstruirABO(char ruta[255])
 {
     ifstream archivo(ruta, ios::binary);
     
     char c[30];
     archivo >> c;
-    
     formatearPalabra(c);
-    
-    palabra* nueva_lista = PalabraList(c);
+
+    arbol* nuevo_arbol = nuevoArbol(c);
     
     while(archivo >> c){
         formatearPalabra(c);
-        nueva_lista = insert_alfabetico(nueva_lista, c);
+        nuevo_arbol = insert_ABO(nuevo_arbol, c);
     }
     
     cout << "El archivo se ha leído correctamente.";
