@@ -2,12 +2,21 @@
 #include <fstream>
 using namespace std;
 
-//Nodo de una lista enlazada de palabras
+//Estructura para una palabra
 struct palabra
 {
     char palabra[30];
     int frq;
     palabra* sig;
+}
+
+//Nodo para un árbol
+struct arbol
+{
+    char Letra;
+    palabra* l;
+    arbol* ri;
+    arbol* rd;
 }
 
 // -- MAIN --
