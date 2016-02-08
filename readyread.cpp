@@ -18,8 +18,8 @@ struct arbol
 {
     char Letra;
     palabra* l;
-    arbol* ri;
-    arbol* rd;
+    arbol* ri = NULL;
+    arbol* rd = NULL;
 };
 
 //Función que crea un nuevo nodo para una lista de palabras
@@ -183,6 +183,19 @@ arbol* insert_ABO(arbol* abo,char p[30])
     return inicio;
 }
 
+//Función que elimina una lista enlazada de palabras
+
+void eliminarLista(palabra* ls)
+{
+    palabra* anterior = new palabra;
+    
+    while(ls != NULL){
+        anterior = ls;
+        ls = ls -> sig;
+        delete anterior;
+    }
+}
+
 //Función que construye una lista enlazada de nodos palabras en orden alfabético
 //a partir del contenido de un archivo de texto.
 //@return: puntero al inicio de la lista
@@ -261,43 +274,6 @@ void imprimirListasArbol(arbol* abo)
     }
 }
 
-//Función que imprime la palabra más frecuente ubicada en una lista del ABO
-//@return: <void>
-
-palabra* masFrecuente(arbol* abo, palabra* maxFreq)
-{
-    
-    if(abo -> ri == NULL)
-    {
-        palabra* lista = abo -> l;
-        while(lista != NULL){
-            if((lista -> freq) >= (maxFreq -> freq)){
-                maxFreq = lista;
-            }
-            lista = lista -> sig;
-        }
-        return maxFreq;
-    }
- 
-    maxFreq = masFrecuente(abo -> ri, maxFreq);
-        
-    palabra* lista = abo -> l;
-    while(lista != NULL){
-        if((lista -> freq) >= (maxFreq -> freq)){
-            maxFreq = lista;
-        }
-        lista = lista -> sig;
-    }
-    
-    
-    if(abo -> rd != NULL)
-    {
-        maxFreq = masFrecuente(abo -> rd, maxFreq);
-    }
-    
-    return maxFreq;
-    
-}
 
 //Función que imprime la palabra menos frecuente ubicada en una lista del ABO
 //@return: <void>
@@ -337,6 +313,58 @@ palabra* menosFrecuente(arbol* abo, palabra* minFreq)
     
 }
 
+//Función que retorna una lista enlazada de palabras en orden de frecuencia
+//@return: <void>
+
+palabra* masFrecuentes(arbol* abo, palabra* maxFreq)
+{
+    if(abo -> ri == NULL){
+        palabra* ls_pal =  abo -> l;
+        while(ls_pal != NULL){
+            if((ls_pal -> freq) > (maxFreq -> freq)){
+                eliminarLista(maxFreq -> sig);
+                maxFreq -> freq = ls_pal -> freq;
+                maxFreq -> sig = nuevoNodoPalabra(ls_pal -> pal);
+                maxFreq -> sig -> freq = maxFreq -> freq;
+            }
+            else if((ls_pal -> freq) == (maxFreq -> freq)){
+                palabra* inicio = maxFreq;
+                while(maxFreq -> sig != NULL) maxFreq = maxFreq -> sig;
+                maxFreq -> sig = nuevoNodoPalabra(ls_pal -> pal);
+                maxFreq -> sig -> freq = maxFreq -> freq;
+                maxFreq = inicio;
+            }
+            ls_pal = ls_pal -> sig;
+        }
+    }
+    else{
+        
+        maxFreq = masFrecuentes(abo -> ri, maxFreq);
+        palabra* ls_pal =  abo -> l;
+        
+        while(ls_pal != NULL){
+            
+            if((ls_pal -> freq) > (maxFreq -> freq)){
+                eliminarLista(maxFreq -> sig);
+                maxFreq -> freq = ls_pal -> freq;
+                maxFreq -> sig = nuevoNodoPalabra(ls_pal -> pal);
+                maxFreq -> sig -> freq = maxFreq -> freq;
+            }
+            else if((ls_pal -> freq) == (maxFreq -> freq)){
+                palabra* inicio = maxFreq;
+                while(maxFreq -> sig != NULL) maxFreq = maxFreq -> sig;
+                maxFreq -> sig = nuevoNodoPalabra(ls_pal -> pal);
+                maxFreq -> sig -> freq = maxFreq -> freq;
+                maxFreq = inicio;
+            }
+            ls_pal = ls_pal -> sig;
+        }
+    }
+    
+    if(abo -> rd != NULL) maxFreq = masFrecuentes(abo -> rd, maxFreq);
+    
+    return maxFreq;
+}
 
 //Función que imprime un menú con las distintas funcionalidades que ofrece
 //el programa.
@@ -370,14 +398,17 @@ void menuOpciones(arbol* abo)
             cout << "\n\n";
         }
         else if(opcion == '2'){
-            palabra* max = abo -> l;
+            char inicio[30] = "_init_";
+            palabra* max = nuevoNodoPalabra(inicio);
             palabra* min = abo -> l;
-            max = masFrecuente(abo, max);
+            max = masFrecuentes(abo, max);
             min = menosFrecuente(abo, min);
-            cout << "La palabra que más aparece en el archivo es \"" << max -> pal <<
-                    "\" (" << max -> freq << " aparicion(es))\n"
-                    "La palabra que menos aparece en el archivo es \"" << min -> pal <<
-                    "\" (" << min -> freq << " aparicion(es))\n\n";
+            cout << "  palabras más repetidas    ||  frecuencia   \n"
+                 << "============================================\n";
+                 
+            imprimirListaPalabras(max -> sig);
+            
+            cout << "\n";
         }
             
         
