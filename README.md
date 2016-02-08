@@ -1,4 +1,4 @@
-*ReadyRead* 
+\__---\_-- *ReadyRead* 
 ===
 \[Trabajo para el curso algoritmos y estructuras de datos\]
 
@@ -23,15 +23,17 @@ de un método recursivo para recorrer todos sus nodos.
 <br>
 Funcionalidades planificadas para la versión 0.0.1a:
 
-* Listar todas las palabras presentes en el archivo en forma alfabética
+* Listar todas las palabras presentes esn el archivo en forma alfabética
  indicando la frecuencia de aparición de cada una.
 
 * Imprimir la palabra más y menos frecuente.
 
 * Imprimir la palabra con mayor y menor número de carácteres.
 
+<br>
+
 Funcionalidades planificadas para la versión 0.0.2a:
 
 * Eliminar el nodo del árbol con la lista de palabras más breve
 
-* Permitir la eliminación de una palabra  
+* Permitir eliminar una palabra  
