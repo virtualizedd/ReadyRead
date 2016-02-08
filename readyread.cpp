@@ -256,8 +256,8 @@ void imprimirListasArbol(arbol* abo)
 }
 
 
-//Función que imprime la palabra menos frecuente ubicada en una lista del ABO
-//@return: <void>
+//Función que retorna una lista enlazada con las palabras menos frecuentes
+//@return: puntero al primer elemento de la lista
 
 palabra* menosFrecuentes(arbol* abo, palabra* minFreq)
 {
@@ -309,8 +309,8 @@ palabra* menosFrecuentes(arbol* abo, palabra* minFreq)
     return minFreq;
 }
 
-//Función que retorna una lista enlazada de palabras en orden de frecuencia
-//@return: <void>
+//Función que retorna una lista enlazada con las palabras más frecuentes
+//@return: puntero al primer elemento de la lista
 
 palabra* masFrecuentes(arbol* abo, palabra* maxFreq)
 {
@@ -362,6 +362,59 @@ palabra* masFrecuentes(arbol* abo, palabra* maxFreq)
     return maxFreq;
 }
 
+//Función que retorna una lista enlazada con las palabras de menor longitud
+//@return: puntero al primer elemento de la lista
+
+palabra* menosCaracteres(arbol* abo, palabra* minLong)
+{
+    
+    if(abo -> ri == NULL){
+        palabra* ls_pal =  abo -> l;
+        while(ls_pal != NULL){
+            if(strlen(ls_pal -> pal) < unsigned(minLong -> freq)){
+                eliminarLista(minLong -> sig);
+                minLong -> freq = strlen(ls_pal -> pal);
+                minLong -> sig = nuevoNodoPalabra(ls_pal -> pal);
+                minLong -> sig -> freq = ls_pal -> freq;
+            }
+            else if(strlen(ls_pal -> pal) == unsigned(minLong -> freq)){
+                palabra* inicio = minLong;
+                while(minLong -> sig != NULL) minLong = minLong -> sig;
+                minLong -> sig = nuevoNodoPalabra(ls_pal -> pal);
+                minLong -> sig -> freq = ls_pal -> freq;
+                minLong = inicio;
+            }
+            ls_pal = ls_pal -> sig;
+        }
+    }
+    else{
+        
+        minLong = menosCaracteres(abo -> ri, minLong);
+        palabra* ls_pal =  abo -> l;
+        
+        while(ls_pal != NULL){
+            if(strlen(ls_pal -> pal) < unsigned(minLong -> freq)){
+                eliminarLista(minLong -> sig);
+                minLong -> freq = strlen(ls_pal -> pal);
+                minLong -> sig = nuevoNodoPalabra(ls_pal -> pal);
+                minLong -> sig -> freq = ls_pal -> freq;
+            }
+            else if(strlen(ls_pal -> pal) == unsigned(minLong -> freq)){
+                palabra* inicio = minLong;
+                while(minLong -> sig != NULL) minLong = minLong -> sig;
+                minLong -> sig = nuevoNodoPalabra(ls_pal -> pal);
+                minLong -> sig -> freq = ls_pal -> freq;
+                minLong = inicio;
+            }
+            ls_pal = ls_pal -> sig;
+        }
+    }
+    
+    if(abo -> rd != NULL) minLong = menosCaracteres(abo -> rd, minLong);
+    
+    return minLong;
+}
+
 //Función que imprime un menú con las distintas funcionalidades que ofrece
 //el programa.
 
@@ -406,6 +459,32 @@ void menuOpciones(arbol* abo)
             
             cout << "\n\n"
                  << " palabras menos repetidas   ||  frecuencia   \n"
+                 << "============================================\n";
+                 
+            imprimirListaPalabras(min -> sig);
+            
+            cout << "\n\n";
+            
+            eliminarLista(max);
+            eliminarLista(min);
+        }
+        else if(opcion == '3'){
+            char inicio[30] = "_init_";
+            palabra* max = nuevoNodoPalabra(inicio);
+            palabra* min = nuevoNodoPalabra(inicio);
+            min -> freq = 30;
+            //max = masCaracteres(abo, max);
+            min = menosCaracteres(abo, min);
+            
+            /*cout << " palabras más repetidas     ||  frecuencia   \n"
+                 << "============================================\n";
+                 
+            imprimirListaPalabras(max -> sig);
+            */
+            
+            cout << "\n\n"
+                 << "Las palabras más cortas del documento tienen " << min -> freq << " caracter(es).\n\n"
+                 << " palabras más cortas        ||   frecuencia \n"
                  << "============================================\n";
                  
             imprimirListaPalabras(min -> sig);
