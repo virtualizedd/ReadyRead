@@ -34,16 +34,6 @@ palabra* nuevoNodoPalabra(char valor[30])
     return nodo;
 }
 
-
-//Función para inicializar una nueva lista de palabras
-//@return: puntero al que será el primer elemento
-
-palabra* PalabraList(char valor[30])
-{
-    palabra* inicio = nuevoNodoPalabra(valor);
-    return  inicio;
-}
-
 //Función que inserta un elemento respetando un orden alfabetico
 //Si el valor ya se encuentra en la lista, aumenta en uno su atributo freq
 //@return: un puntero al inicio de la lista
@@ -132,21 +122,12 @@ void formatearPalabra(char p[30])
 
 arbol* nuevoNodoArbol(char p[30])
 {   
-    palabra* nueva_lista = PalabraList(p);
+    palabra* nueva_lista = nuevoNodoPalabra(p);
     arbol* nodo = new arbol;
     nodo -> Letra = p[0];
     nodo -> l = nueva_lista;
     
     return nodo;
-}
-
-//Función que inicializa un ABO
-//@return: puntero al nodo inicial del árbol
-
-arbol* nuevoArbol(char p[30])
-{
-    arbol* inicio =  nuevoNodoArbol(p);
-    return inicio;
 }
 
 //Función que inserta un nuevo valor al ABO según corresponda
@@ -208,7 +189,7 @@ arbol* ConstruirABO(char ruta[255])
     archivo >> c;
     formatearPalabra(c);
 
-    arbol* nuevo_arbol = nuevoArbol(c);
+    arbol* nuevo_arbol = nuevoNodoArbol(c);
     
     while(archivo >> c){
         formatearPalabra(c);
@@ -278,39 +259,54 @@ void imprimirListasArbol(arbol* abo)
 //Función que imprime la palabra menos frecuente ubicada en una lista del ABO
 //@return: <void>
 
-palabra* menosFrecuente(arbol* abo, palabra* minFreq)
+palabra* menosFrecuentes(arbol* abo, palabra* minFreq)
 {
-    
-    if(abo -> ri == NULL)
-    {
-        palabra* lista = abo -> l;
-        while(lista != NULL){
-            if((lista -> freq) < (minFreq -> freq)){
-                minFreq = lista;
+    if(abo -> ri == NULL){
+        palabra* ls_pal =  abo -> l;
+        while(ls_pal != NULL){
+            if((ls_pal -> freq) < (minFreq -> freq)){
+                eliminarLista(minFreq -> sig);
+                minFreq -> freq = ls_pal -> freq;
+                minFreq -> sig = nuevoNodoPalabra(ls_pal -> pal);
+                minFreq -> sig -> freq = minFreq -> freq;
             }
-            lista = lista -> sig;
+            else if((ls_pal -> freq) == (minFreq -> freq)){
+                palabra* inicio = minFreq;
+                while(minFreq -> sig != NULL) minFreq = minFreq -> sig;
+                minFreq -> sig = nuevoNodoPalabra(ls_pal -> pal);
+                minFreq -> sig -> freq = minFreq -> freq;
+                minFreq = inicio;
+            }
+            ls_pal = ls_pal -> sig;
         }
-        return minFreq;
     }
- 
-    minFreq = menosFrecuente(abo -> ri, minFreq);
+    else{
         
-    palabra* lista = abo -> l;
-    while(lista != NULL){
-        if((lista -> freq) < (minFreq -> freq)){
-            minFreq = lista;
+        minFreq = menosFrecuentes(abo -> ri, minFreq);
+        palabra* ls_pal =  abo -> l;
+        
+        while(ls_pal != NULL){
+            
+            if((ls_pal -> freq) < (minFreq -> freq)){
+                eliminarLista(minFreq -> sig);
+                minFreq -> freq = ls_pal -> freq;
+                minFreq -> sig = nuevoNodoPalabra(ls_pal -> pal);
+                minFreq -> sig -> freq = minFreq -> freq;
+            }
+            else if((ls_pal -> freq) == (minFreq -> freq)){
+                palabra* inicio = minFreq;
+                while(minFreq -> sig != NULL) minFreq = minFreq -> sig;
+                minFreq -> sig = nuevoNodoPalabra(ls_pal -> pal);
+                minFreq -> sig -> freq = minFreq -> freq;
+                minFreq = inicio;
+            }
+            ls_pal = ls_pal -> sig;
         }
-        lista = lista -> sig;
     }
     
-    
-    if(abo -> rd != NULL)
-    {
-        minFreq = menosFrecuente(abo -> rd, minFreq);
-    }
+    if(abo -> rd != NULL) minFreq = menosFrecuentes(abo -> rd, minFreq);
     
     return minFreq;
-    
 }
 
 //Función que retorna una lista enlazada de palabras en orden de frecuencia
@@ -400,15 +396,24 @@ void menuOpciones(arbol* abo)
         else if(opcion == '2'){
             char inicio[30] = "_init_";
             palabra* max = nuevoNodoPalabra(inicio);
-            palabra* min = abo -> l;
+            palabra* min = nuevoNodoPalabra(inicio);
             max = masFrecuentes(abo, max);
-            min = menosFrecuente(abo, min);
-            cout << "  palabras más repetidas    ||  frecuencia   \n"
+            min = menosFrecuentes(abo, min);
+            cout << " palabras más repetidas     ||  frecuencia   \n"
                  << "============================================\n";
                  
             imprimirListaPalabras(max -> sig);
             
-            cout << "\n";
+            cout << "\n\n"
+                 << " palabras menos repetidas   ||  frecuencia   \n"
+                 << "============================================\n";
+                 
+            imprimirListaPalabras(min -> sig);
+            
+            cout << "\n\n";
+            
+            eliminarLista(max);
+            eliminarLista(min);
         }
             
         
