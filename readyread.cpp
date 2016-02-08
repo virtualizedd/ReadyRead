@@ -415,6 +415,59 @@ palabra* menosCaracteres(arbol* abo, palabra* minLong)
     return minLong;
 }
 
+//Función que retorna una lista enlazada con las palabras de menor longitud
+//@return: puntero al primer elemento de la lista
+
+palabra* masCaracteres(arbol* abo, palabra* maxLong)
+{
+    
+    if(abo -> ri == NULL){
+        palabra* ls_pal =  abo -> l;
+        while(ls_pal != NULL){
+            if(strlen(ls_pal -> pal) > unsigned(maxLong -> freq)){
+                eliminarLista(maxLong -> sig);
+                maxLong -> freq = strlen(ls_pal -> pal);
+                maxLong -> sig = nuevoNodoPalabra(ls_pal -> pal);
+                maxLong -> sig -> freq = ls_pal -> freq;
+            }
+            else if(strlen(ls_pal -> pal) == unsigned(maxLong -> freq)){
+                palabra* inicio = maxLong;
+                while(maxLong -> sig != NULL) maxLong = maxLong -> sig;
+                maxLong -> sig = nuevoNodoPalabra(ls_pal -> pal);
+                maxLong -> sig -> freq = ls_pal -> freq;
+                maxLong = inicio;
+            }
+            ls_pal = ls_pal -> sig;
+        }
+    }
+    else{
+        
+        maxLong = masCaracteres(abo -> ri, maxLong);
+        palabra* ls_pal =  abo -> l;
+        
+        while(ls_pal != NULL){
+            if(strlen(ls_pal -> pal) > unsigned(maxLong -> freq)){
+                eliminarLista(maxLong -> sig);
+                maxLong -> freq = strlen(ls_pal -> pal);
+                maxLong -> sig = nuevoNodoPalabra(ls_pal -> pal);
+                maxLong -> sig -> freq = ls_pal -> freq;
+            }
+            else if(strlen(ls_pal -> pal) == unsigned(maxLong -> freq)){
+                palabra* inicio = maxLong;
+                while(maxLong -> sig != NULL) maxLong = maxLong -> sig;
+                maxLong -> sig = nuevoNodoPalabra(ls_pal -> pal);
+                maxLong -> sig -> freq = ls_pal -> freq;
+                maxLong = inicio;
+            }
+            ls_pal = ls_pal -> sig;
+        }
+    }
+    
+    if(abo -> rd != NULL) maxLong = masCaracteres(abo -> rd, maxLong);
+    
+    return maxLong;
+}
+
 //Función que imprime un menú con las distintas funcionalidades que ofrece
 //el programa.
 
@@ -473,18 +526,20 @@ void menuOpciones(arbol* abo)
             palabra* max = nuevoNodoPalabra(inicio);
             palabra* min = nuevoNodoPalabra(inicio);
             min -> freq = 30;
-            //max = masCaracteres(abo, max);
+            
+            max = masCaracteres(abo, max);
             min = menosCaracteres(abo, min);
             
-            /*cout << " palabras más repetidas     ||  frecuencia   \n"
+            cout << "\n"
+                 << "Las palabras más largas del documento tienen " << max -> freq << " caracter(es).\n\n"
+                 << " palabras más largas       ||   frecuencia \n"
                  << "============================================\n";
                  
             imprimirListaPalabras(max -> sig);
-            */
             
             cout << "\n\n"
                  << "Las palabras más cortas del documento tienen " << min -> freq << " caracter(es).\n\n"
-                 << " palabras más cortas        ||   frecuencia \n"
+                 << " palabras más cortas        ||  frecuencia  \n"
                  << "============================================\n";
                  
             imprimirListaPalabras(min -> sig);
