@@ -1,4 +1,4 @@
-\__---\_-- *ReadyRead* 
+\_---\_-- *ReadyRead* 
 ===
 \[Trabajo para el curso algoritmos y estructuras de datos\]
 

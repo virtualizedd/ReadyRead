@@ -468,6 +468,38 @@ palabra* masCaracteres(arbol* abo, palabra* maxLong)
     return maxLong;
 }
 
+//Función que elimina por completo un arbol
+
+void eliminarArbol(arbol* a)
+{
+    if(a -> ri != NULL){ eliminarArbol(a -> ri);}
+    if(a -> rd != NULL){ eliminarArbol(a -> rd);}
+    
+    eliminarLista(a -> l);
+    delete a;
+}
+
+//Función que elimina un árbol actual y construye uno nuevo basado en una
+//nueva ruta de un archivo.
+
+arbol* nuevoArbolArchivo(arbol* abo)
+{
+    eliminarArbol(abo);
+    
+    char ruta[30];
+    
+    cout << "Ingrese la ruta del archivo que desea analizar:                   \n"
+         << ">>> ";
+
+    cin >> ruta;
+    
+    cout << "\n\n";
+    
+    arbol* nuevo_arbol = ConstruirABO(ruta);
+    
+    return nuevo_arbol;
+}
+
 //Función que imprime un menú con las distintas funcionalidades que ofrece
 //el programa.
 
@@ -489,8 +521,13 @@ void menuOpciones(arbol* abo)
         
         cout << "\n";
         
-        if(opcion == 'x')  break;
+        if(opcion == 'x'){
+            eliminarArbol(abo);
+            break;
+        }
         else if(opcion == 'n'){
+            abo = nuevoArbolArchivo(abo);
+            continue; 
         }
         else if(opcion == '1'){
             cout << "           palabra          ||  frecuencia   \n"
@@ -560,8 +597,12 @@ void menuOpciones(arbol* abo)
        if(opcion == 's') cout << "\n\n";
        else if(opcion == 'm'){
            cout << "\n";
+           abo = nuevoArbolArchivo(abo);
        }
-       else break;
+       else{
+           eliminarArbol(abo);
+           break;
+       }
        
        
     }
@@ -578,7 +619,8 @@ int main()
     arbol* arbol_palabras = ConstruirABO(ruta_archivo);
     
     menuOpciones(arbol_palabras);
-
+    
+    
     
     return 0;
 }
