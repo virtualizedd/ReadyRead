@@ -1,9 +1,11 @@
-#include <iostream>
-#include <fstream>
-#include <iomanip>
-#include <string.h>
+#include <iostream> //I/O
+#include <fstream>  //Lectura y Escritura de archivos
+#include <iomanip>  //Manipuladores de formato para la salida
+#include <string.h> //Funcionalidades para arrays de carácteres
 
 using namespace std;
+
+/************** STRUCTS ******************************************************/
 
 //Nodo de una lista enlazada de palabras
 struct palabra
@@ -13,7 +15,7 @@ struct palabra
     palabra* sig = NULL;
 };
 
-//Nodo para un árbol binario
+//Nodo para un árbol binario de listas enlazadas
 struct arbol
 {
     char Letra;
@@ -22,31 +24,39 @@ struct arbol
     arbol* rd = NULL;
 };
 
-//Función que crea un nuevo nodo para una lista de palabras
-//@return: puntero al nodo creado
+/*****************************************************************************/
 
-palabra* nuevoNodoPalabra(char valor[30])
+/**************** FUNCIONES **************************************************/
+
+/* @func: define en memoria un nuevo nodo de tipo palabra 
+ * @params: p => Array de carácteres a asignar al atributo pal del nodo 
+ * @return: puntero al nodo creado */
+ 
+palabra* nuevoNodoPalabra(char p[30])
 {
     palabra* nodo = new palabra;
-    strcpy(nodo -> pal, valor);
+    strcpy(nodo -> pal, p);
     nodo -> freq = 1;
     
     return nodo;
 }
 
-//Función que inserta un elemento respetando un orden alfabetico
-//Si el valor ya se encuentra en la lista, aumenta en uno su atributo freq
-//@return: un puntero al inicio de la lista
-palabra* insert_alfabetico(palabra* lista, char valor[30]){
+/* @func: crea un nuevo nodo de tipo palabra y lo inserta en una lista enlazada
+ *        de palabras respetando un criterio de orden alfabético
+ * @params: lista => lista ordenada alfabéticamente en la cual insertar el nodo
+ *          p => Array de carácteres a asignar al atrib. pal del nodo creado
+ * @return: puntero al primer elemento de la lista enlazada */
+ 
+palabra* insert_alfabetico(palabra* lista, char p[30]){
      
-    int comparacion = strcmp(lista -> pal, valor);
+    int comparacion = strcmp(lista -> pal, p);
     
     if(comparacion == 0){
         lista -> freq += 1;
         return lista;
     }
     else if(comparacion > 0){
-        palabra* nuevo = nuevoNodoPalabra(valor);
+        palabra* nuevo = nuevoNodoPalabra(p);
         nuevo -> sig = lista;
         return nuevo;
     }
@@ -56,14 +66,14 @@ palabra* insert_alfabetico(palabra* lista, char valor[30]){
         lista = lista -> sig;
         
         while(lista != NULL){
-            comparacion = strcmp(lista -> pal, valor);
+            comparacion = strcmp(lista -> pal, p);
             
             if(comparacion == 0){
                    lista -> freq += 1; 
                    return inicio;
             }
             else if(comparacion > 0){
-                palabra* nuevo = nuevoNodoPalabra(valor);
+                palabra* nuevo = nuevoNodoPalabra(p);
                 
                 nuevo -> sig = lista;
                 anterior -> sig = nuevo;
@@ -74,22 +84,22 @@ palabra* insert_alfabetico(palabra* lista, char valor[30]){
             lista = lista -> sig;
         }
         
-        palabra* nuevo = nuevoNodoPalabra(valor);
+        palabra* nuevo = nuevoNodoPalabra(p);
         anterior -> sig = nuevo;
         return inicio;
     }
 }
 
-//Función que verifica si un carácter corresponde a un signo de puntuación
-//@return: booleano
+/* @func: Verificar si un carácter es o no un signo de puntuación
+ * @params: c => Carácter a evaluar
+ * @return: un booleano que indica si el carácter es un signo o no */
 
 bool esSigno(char c)
 {
     char signos[30] = "\"',;.()[]{}#:-_¡!¿?";
     short int i = 0;
     
-    while(signos[i])
-    {
+    while(signos[i]){
         if(signos[i] == c) return true;
         i++;
     }
@@ -97,9 +107,10 @@ bool esSigno(char c)
     return false;
 }
 
-//Función que convierte a minúsculas todos los carácteres de un array y quita
-//los signos de puntuación.
-//@return: <void>
+/* @func: formatear un Array de carácteres removiendo los signos de puntuación
+ *        presentes en él y pasando todos los carácteres a minúsculas.
+ * @params: p => Array a formatear
+ * @return: void */
 
 void formatearPalabra(char p[30])
 {
@@ -117,8 +128,8 @@ void formatearPalabra(char p[30])
     strcpy(p, formato);
 }
 
-//Función que define un nuevo nodo para un ABO
-//@return: puntero al nodo definido
+/* @func: define en memoria un nuevo nodo de tipo de árbol.
+ * @params: */
 
 arbol* nuevoNodoArbol(char p[30])
 {   
@@ -164,17 +175,18 @@ arbol* insert_ABO(arbol* abo,char p[30])
     return inicio;
 }
 
-//Función que elimina una lista enlazada de palabras
+/* @func: Remueve de memoria todos los elementos de una lista enlazada a partir
+ *        de un elemento de inicio.
+ * @params: ls => Puntero a la palabra de la lista desde la cual remover
+ *                elementos de la lista.
+ * @return: void */
 
 void eliminarLista(palabra* ls)
 {
-    palabra* anterior = new palabra;
-    
-    while(ls != NULL){
-        anterior = ls;
-        ls = ls -> sig;
-        delete anterior;
-    }
+    if(ls -> sig != NULL){
+         eliminarLista(ls -> sig);
+         delete ls;
+     }
 }
 
 //Función que construye una lista enlazada de nodos palabras en orden alfabético
@@ -233,26 +245,16 @@ void imprimirListaPalabras(palabra* lista)
     }
 }
 
-//Función que recorre un arbol y imprime las listas de palabras de cada nodo
-//en orden alfabético.
-//@return: <void>
+/* @func: Recorre un árbol y imprime la lista de palabras de cada nodo.
+ * @params: abo => árbol binario de tipo arbol a recorrer
+ * @return: void */
 
 void imprimirListasArbol(arbol* abo)
 {
-    if(abo -> ri == NULL)
-    {
-        imprimirListaPalabras(abo -> l);
-    }
-    else
-    {
-        imprimirListasArbol(abo -> ri);
-        imprimirListaPalabras(abo -> l);
-    }
+    if(abo -> ri != NULL) imprimirListasArbol(abo -> ri);
+    if(abo -> rd != NULL) imprimirListasArbol(abo -> rd);
     
-    if(abo -> rd != NULL)
-    {
-        imprimirListasArbol(abo -> rd);
-    }
+    imprimirListaPalabras(abo -> l);
 }
 
 
@@ -261,50 +263,26 @@ void imprimirListasArbol(arbol* abo)
 
 palabra* menosFrecuentes(arbol* abo, palabra* minFreq)
 {
-    if(abo -> ri == NULL){
-        palabra* ls_pal =  abo -> l;
-        while(ls_pal != NULL){
-            if((ls_pal -> freq) < (minFreq -> freq)){
-                eliminarLista(minFreq -> sig);
-                minFreq -> freq = ls_pal -> freq;
-                minFreq -> sig = nuevoNodoPalabra(ls_pal -> pal);
-                minFreq -> sig -> freq = minFreq -> freq;
-            }
-            else if((ls_pal -> freq) == (minFreq -> freq)){
-                palabra* inicio = minFreq;
-                while(minFreq -> sig != NULL) minFreq = minFreq -> sig;
-                minFreq -> sig = nuevoNodoPalabra(ls_pal -> pal);
-                minFreq -> sig -> freq = minFreq -> freq;
-                minFreq = inicio;
-            }
-            ls_pal = ls_pal -> sig;
-        }
-    }
-    else{
-        
-        minFreq = menosFrecuentes(abo -> ri, minFreq);
-        palabra* ls_pal =  abo -> l;
-        
-        while(ls_pal != NULL){
-            
-            if((ls_pal -> freq) < (minFreq -> freq)){
-                eliminarLista(minFreq -> sig);
-                minFreq -> freq = ls_pal -> freq;
-                minFreq -> sig = nuevoNodoPalabra(ls_pal -> pal);
-                minFreq -> sig -> freq = minFreq -> freq;
-            }
-            else if((ls_pal -> freq) == (minFreq -> freq)){
-                palabra* inicio = minFreq;
-                while(minFreq -> sig != NULL) minFreq = minFreq -> sig;
-                minFreq -> sig = nuevoNodoPalabra(ls_pal -> pal);
-                minFreq -> sig -> freq = minFreq -> freq;
-                minFreq = inicio;
-            }
-            ls_pal = ls_pal -> sig;
-        }
-    }
+    if(abo -> ri != NULL) menosFrecuentes(abo -> ri, minFreq);
+    if(abo -> rd != NULL) menosFrecuentes(abo -> rd, minFreq);
     
-    if(abo -> rd != NULL) minFreq = menosFrecuentes(abo -> rd, minFreq);
+    palabra* ls =  abo -> l;
+    while(ls != NULL){
+        if((ls -> freq) < (minFreq -> freq)){
+            if(minFreq -> sig != NULL) eliminarLista(minFreq -> sig);
+            minFreq -> freq = ls -> freq;
+            minFreq -> sig = nuevoNodoPalabra(ls -> pal);
+            minFreq -> sig -> freq = minFreq -> freq;
+        }
+        else if((ls -> freq) == (minFreq -> freq)){
+            palabra* inicio = minFreq;
+            while(minFreq -> sig != NULL) minFreq = minFreq -> sig;
+            minFreq -> sig = nuevoNodoPalabra(ls -> pal);
+            minFreq -> sig -> freq = minFreq -> freq;
+            minFreq = inicio;
+        }
+        ls = ls -> sig;
+    }
     
     return minFreq;
 }
@@ -314,51 +292,26 @@ palabra* menosFrecuentes(arbol* abo, palabra* minFreq)
 
 palabra* masFrecuentes(arbol* abo, palabra* maxFreq)
 {
-    if(abo -> ri == NULL){
-        palabra* ls_pal =  abo -> l;
-        while(ls_pal != NULL){
-            if((ls_pal -> freq) > (maxFreq -> freq)){
-                eliminarLista(maxFreq -> sig);
-                maxFreq -> freq = ls_pal -> freq;
-                maxFreq -> sig = nuevoNodoPalabra(ls_pal -> pal);
-                maxFreq -> sig -> freq = maxFreq -> freq;
-            }
-            else if((ls_pal -> freq) == (maxFreq -> freq)){
-                palabra* inicio = maxFreq;
-                while(maxFreq -> sig != NULL) maxFreq = maxFreq -> sig;
-                maxFreq -> sig = nuevoNodoPalabra(ls_pal -> pal);
-                maxFreq -> sig -> freq = maxFreq -> freq;
-                maxFreq = inicio;
-            }
-            ls_pal = ls_pal -> sig;
+    if(abo -> ri != NULL)  masFrecuentes(abo -> ri, maxFreq);
+    if(abo -> rd != NULL)  masFrecuentes(abo -> rd, maxFreq);
+
+    palabra* ls =  abo -> l;
+    while(ls != NULL){
+        if((ls -> freq) > (maxFreq -> freq)){
+            if(maxFreq -> sig != NULL) eliminarLista(maxFreq -> sig);
+            maxFreq -> freq = ls -> freq;
+            maxFreq -> sig = nuevoNodoPalabra(ls -> pal);
+            maxFreq -> sig -> freq = maxFreq -> freq;
         }
-    }
-    else{
-        
-        maxFreq = masFrecuentes(abo -> ri, maxFreq);
-        palabra* ls_pal =  abo -> l;
-        
-        while(ls_pal != NULL){
-            
-            if((ls_pal -> freq) > (maxFreq -> freq)){
-                eliminarLista(maxFreq -> sig);
-                maxFreq -> freq = ls_pal -> freq;
-                maxFreq -> sig = nuevoNodoPalabra(ls_pal -> pal);
-                maxFreq -> sig -> freq = maxFreq -> freq;
-            }
-            else if((ls_pal -> freq) == (maxFreq -> freq)){
-                palabra* inicio = maxFreq;
-                while(maxFreq -> sig != NULL) maxFreq = maxFreq -> sig;
-                maxFreq -> sig = nuevoNodoPalabra(ls_pal -> pal);
-                maxFreq -> sig -> freq = maxFreq -> freq;
-                maxFreq = inicio;
-            }
-            ls_pal = ls_pal -> sig;
+        else if((ls -> freq) == (maxFreq -> freq)){
+            palabra* inicio = maxFreq;
+            while(maxFreq -> sig != NULL) maxFreq = maxFreq -> sig;
+            maxFreq -> sig = nuevoNodoPalabra(ls -> pal);
+            maxFreq -> sig -> freq = maxFreq -> freq;
+            maxFreq = inicio;
         }
+        ls = ls -> sig;
     }
-    
-    if(abo -> rd != NULL) maxFreq = masFrecuentes(abo -> rd, maxFreq);
-    
     return maxFreq;
 }
 
@@ -367,51 +320,27 @@ palabra* masFrecuentes(arbol* abo, palabra* maxFreq)
 
 palabra* menosCaracteres(arbol* abo, palabra* minLong)
 {
-    
-    if(abo -> ri == NULL){
-        palabra* ls_pal =  abo -> l;
-        while(ls_pal != NULL){
-            if(strlen(ls_pal -> pal) < unsigned(minLong -> freq)){
-                eliminarLista(minLong -> sig);
-                minLong -> freq = strlen(ls_pal -> pal);
-                minLong -> sig = nuevoNodoPalabra(ls_pal -> pal);
-                minLong -> sig -> freq = ls_pal -> freq;
-            }
-            else if(strlen(ls_pal -> pal) == unsigned(minLong -> freq)){
-                palabra* inicio = minLong;
-                while(minLong -> sig != NULL) minLong = minLong -> sig;
-                minLong -> sig = nuevoNodoPalabra(ls_pal -> pal);
-                minLong -> sig -> freq = ls_pal -> freq;
-                minLong = inicio;
-            }
-            ls_pal = ls_pal -> sig;
+    if(abo -> ri != NULL)  menosCaracteres(abo -> ri, minLong);
+    if(abo -> rd != NULL)  menosCaracteres(abo -> rd, minLong);
+
+    palabra* ls =  abo -> l;
+    while(ls != NULL){
+        if(strlen(ls -> pal) < unsigned(minLong -> freq)){
+            if(minLong -> sig != NULL) eliminarLista(minLong -> sig);
+            minLong -> freq = strlen(ls -> pal);
+            minLong -> sig = nuevoNodoPalabra(ls -> pal);
+            minLong -> sig -> freq = ls -> freq;
         }
-    }
-    else{
-        
-        minLong = menosCaracteres(abo -> ri, minLong);
-        palabra* ls_pal =  abo -> l;
-        
-        while(ls_pal != NULL){
-            if(strlen(ls_pal -> pal) < unsigned(minLong -> freq)){
-                eliminarLista(minLong -> sig);
-                minLong -> freq = strlen(ls_pal -> pal);
-                minLong -> sig = nuevoNodoPalabra(ls_pal -> pal);
-                minLong -> sig -> freq = ls_pal -> freq;
-            }
-            else if(strlen(ls_pal -> pal) == unsigned(minLong -> freq)){
-                palabra* inicio = minLong;
-                while(minLong -> sig != NULL) minLong = minLong -> sig;
-                minLong -> sig = nuevoNodoPalabra(ls_pal -> pal);
-                minLong -> sig -> freq = ls_pal -> freq;
-                minLong = inicio;
-            }
-            ls_pal = ls_pal -> sig;
+        else if(strlen(ls -> pal) == unsigned(minLong -> freq)){
+            palabra* inicio = minLong;
+            while(minLong -> sig != NULL) minLong = minLong -> sig;
+            minLong -> sig = nuevoNodoPalabra(ls -> pal);
+            minLong -> sig -> freq = ls -> freq;
+            minLong = inicio;
         }
+        ls = ls -> sig;
     }
-    
-    if(abo -> rd != NULL) minLong = menosCaracteres(abo -> rd, minLong);
-    
+
     return minLong;
 }
 
@@ -420,50 +349,26 @@ palabra* menosCaracteres(arbol* abo, palabra* minLong)
 
 palabra* masCaracteres(arbol* abo, palabra* maxLong)
 {
+    if(abo -> ri != NULL)  masCaracteres(abo -> ri, maxLong);
+    if(abo -> rd != NULL)  masCaracteres(abo -> rd, maxLong);
     
-    if(abo -> ri == NULL){
-        palabra* ls_pal =  abo -> l;
-        while(ls_pal != NULL){
-            if(strlen(ls_pal -> pal) > unsigned(maxLong -> freq)){
-                eliminarLista(maxLong -> sig);
-                maxLong -> freq = strlen(ls_pal -> pal);
-                maxLong -> sig = nuevoNodoPalabra(ls_pal -> pal);
-                maxLong -> sig -> freq = ls_pal -> freq;
-            }
-            else if(strlen(ls_pal -> pal) == unsigned(maxLong -> freq)){
-                palabra* inicio = maxLong;
-                while(maxLong -> sig != NULL) maxLong = maxLong -> sig;
-                maxLong -> sig = nuevoNodoPalabra(ls_pal -> pal);
-                maxLong -> sig -> freq = ls_pal -> freq;
-                maxLong = inicio;
-            }
-            ls_pal = ls_pal -> sig;
+    palabra* ls =  abo -> l;
+    while(ls != NULL){
+        if(strlen(ls -> pal) > unsigned(maxLong -> freq)){
+            if(maxLong -> sig != NULL) eliminarLista(maxLong -> sig);
+            maxLong -> freq = strlen(ls -> pal);
+            maxLong -> sig = nuevoNodoPalabra(ls -> pal);
+            maxLong -> sig -> freq = ls -> freq;
         }
-    }
-    else{
-        
-        maxLong = masCaracteres(abo -> ri, maxLong);
-        palabra* ls_pal =  abo -> l;
-        
-        while(ls_pal != NULL){
-            if(strlen(ls_pal -> pal) > unsigned(maxLong -> freq)){
-                eliminarLista(maxLong -> sig);
-                maxLong -> freq = strlen(ls_pal -> pal);
-                maxLong -> sig = nuevoNodoPalabra(ls_pal -> pal);
-                maxLong -> sig -> freq = ls_pal -> freq;
-            }
-            else if(strlen(ls_pal -> pal) == unsigned(maxLong -> freq)){
-                palabra* inicio = maxLong;
-                while(maxLong -> sig != NULL) maxLong = maxLong -> sig;
-                maxLong -> sig = nuevoNodoPalabra(ls_pal -> pal);
-                maxLong -> sig -> freq = ls_pal -> freq;
-                maxLong = inicio;
-            }
-            ls_pal = ls_pal -> sig;
+        else if(strlen(ls -> pal) == unsigned(maxLong -> freq)){
+            palabra* inicio = maxLong;
+            while(maxLong -> sig != NULL) maxLong = maxLong -> sig;
+            maxLong -> sig = nuevoNodoPalabra(ls -> pal);
+            maxLong -> sig -> freq = ls -> freq;
+            maxLong = inicio;
         }
+        ls = ls -> sig;
     }
-    
-    if(abo -> rd != NULL) maxLong = masCaracteres(abo -> rd, maxLong);
     
     return maxLong;
 }
@@ -515,8 +420,8 @@ void menuOpciones(arbol* abo)
              << "   [x] Salir de la aplicación \n\n"
              << "Ingresa el [<codigo>] listado a la izquierda de la opción que deseas ejecutar\n"
              << ">>> ";
+             
         char opcion;
-        
         cin >> opcion;
         
         cout << "\n";
@@ -530,8 +435,10 @@ void menuOpciones(arbol* abo)
             continue; 
         }
         else if(opcion == '1'){
+            
             cout << "           palabra          ||  frecuencia   \n"
                  << "============================================\n";
+                 
             imprimirListasArbol(abo);
             
             cout << "\n\n";
@@ -619,8 +526,6 @@ int main()
     arbol* arbol_palabras = ConstruirABO(ruta_archivo);
     
     menuOpciones(arbol_palabras);
-    
-    
     
     return 0;
 }
