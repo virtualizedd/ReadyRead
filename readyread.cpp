@@ -48,7 +48,7 @@ palabra* nuevoNodoPalabra(char p[30])
  * @return: puntero al primer elemento de la lista enlazada */
  
 palabra* insert_alfabetico(palabra* lista, char p[30]){
-     
+    
     int comparacion = strcmp(lista -> pal, p);
     
     if(comparacion == 0){
@@ -124,7 +124,6 @@ void formatearPalabra(char p[30])
         }
         i++;
     }
-    
     strcpy(p, formato);
 }
 
@@ -141,10 +140,12 @@ arbol* nuevoNodoArbol(char p[30])
     return nodo;
 }
 
-//Función que inserta un nuevo valor al ABO según corresponda
-//@return: nodo de inicio
+/* @func: crea un nuevo nodo de tipo árbol y lo inserta en un árbol binario
+ *        ordenado.
+ * @params:
+ * @return: un puntero al nodo raíz del árbol */
 
-arbol* insert_ABO(arbol* abo,char p[30])
+arbol* insert_ABO(arbol* abo, char p[30])
 {
     arbol* inicio = abo;
     
@@ -189,9 +190,10 @@ void eliminarLista(palabra* ls)
      }
 }
 
-//Función que construye una lista enlazada de nodos palabras en orden alfabético
-//a partir del contenido de un archivo de texto.
-//@return: puntero al inicio de la lista
+/* @func: construye un árbol binario ordenado (ABO) a partir de las palabras
+ *        presentes en un archivo de texto.
+ * @params: ruta => ruta del archivo
+ * @return: puntero al inicio de la lista */
 
 arbol* ConstruirABO(char ruta[255])
 {
@@ -215,56 +217,56 @@ arbol* ConstruirABO(char ruta[255])
     return nuevo_arbol;
 }
 
-//Función que genera un menú de inicio y pide al usuario la ruta del archivo
-//@return: <void>
+/* @func: imprime una tabla con los valores de pal y freq de cada nodo de tipo
+ *        palabra presente en una lista enlazada.
+ * @params: lista => lista a recorrer.
+ *          titulo_tabla => titulo a mostrar en la columna de las palabras
+ * @return: void */
 
-void menuInicio(char ruta[255])
-{
-    cout << "|||||| ReadyRead v.0.0.1 - inspector de archivos |||||||||||||||||\n"
-         << "------------------------------------------------------------------\n"
-         << "                                                                  \n"
-         << "Ingrese la ruta del archivo que desea analizar:                   \n"
-         << ">>> ";
-    
-    cin >> ruta;
+void imprimirListaPalabras(palabra* lista, char titulo_tabla[30])
+{     
+    cout << "    " << setw(15) << setfill(' ') << left 
+         << titulo_tabla << "   ||  frecuencia   \n"
+         << "============================================\n";
+         
+    while(lista  != NULL){
+        
+        cout << " " << setw(30) << setfill(' ') << left 
+             <<  lista -> pal << "     " << lista -> freq << "\n"
+             << "--------------------------------------------\n";
+        lista = lista -> sig;
+    }
     
     cout << "\n\n";
 }
 
-//Función que imprime una tabla con todas las palabras de una lista junto
-//a su frecuencia.
-//@return: <void>
-
-void imprimirListaPalabras(palabra* lista)
-{      
-    while(lista  != NULL){
-        cout << " " << setw(30) << setfill(' ') << left <<  lista -> pal
-             << "     "  <<  lista -> freq << "\n"
-             << "--------------------------------------------\n";
-        lista = lista -> sig;
-    }
-}
-
-/* @func: Recorre un árbol y imprime la lista de palabras de cada nodo.
+/* @func: Recorre un árbol y imprime la lista de palabras de cada nodo en 
+ *        orden alfabético.
  * @params: abo => árbol binario de tipo arbol a recorrer
  * @return: void */
 
 void imprimirListasArbol(arbol* abo)
 {
     if(abo -> ri != NULL) imprimirListasArbol(abo -> ri);
-    if(abo -> rd != NULL) imprimirListasArbol(abo -> rd);
     
-    imprimirListaPalabras(abo -> l);
+    char t[30] = "";
+    t[0] = toupper(abo -> Letra);
+    imprimirListaPalabras(abo -> l, t);
+    
+    if(abo -> rd != NULL) imprimirListasArbol(abo -> rd);
 }
 
 
-//Función que retorna una lista enlazada con las palabras menos frecuentes
-//@return: puntero al primer elemento de la lista
+/* @func: construye una lista enlazada con las palabras menos frecuentes
+ *        incluidas en las listas de los nodos de un árbol
+ * @params: abo => árbol a recorrer
+ *          minFreq => un puntero a un nodo de tipo palabra inicial que irá
+ *                     recolectando las palabras menos frecuentes
+ * @return: un puntero al primer elemento de la lista construida */
 
 palabra* menosFrecuentes(arbol* abo, palabra* minFreq)
 {
     if(abo -> ri != NULL) menosFrecuentes(abo -> ri, minFreq);
-    if(abo -> rd != NULL) menosFrecuentes(abo -> rd, minFreq);
     
     palabra* ls =  abo -> l;
     while(ls != NULL){
@@ -284,17 +286,22 @@ palabra* menosFrecuentes(arbol* abo, palabra* minFreq)
         ls = ls -> sig;
     }
     
+    if(abo -> rd != NULL) menosFrecuentes(abo -> rd, minFreq);
+    
     return minFreq;
 }
 
-//Función que retorna una lista enlazada con las palabras más frecuentes
-//@return: puntero al primer elemento de la lista
+/* @func: construye una lista enlazada con las palabras más frecuentes
+ *        incluidas en las listas de los nodos de un árbol
+ * @params: abo => árbol a recorrer
+ *          maxFreq => un puntero a un nodo de tipo palabra inicial que irá
+ *                     recolectando las palabras más frecuentes
+ * @return: un puntero al primer elemento de la lista construida */
 
 palabra* masFrecuentes(arbol* abo, palabra* maxFreq)
 {
     if(abo -> ri != NULL)  masFrecuentes(abo -> ri, maxFreq);
-    if(abo -> rd != NULL)  masFrecuentes(abo -> rd, maxFreq);
-
+    
     palabra* ls =  abo -> l;
     while(ls != NULL){
         if((ls -> freq) > (maxFreq -> freq)){
@@ -312,16 +319,23 @@ palabra* masFrecuentes(arbol* abo, palabra* maxFreq)
         }
         ls = ls -> sig;
     }
+    
+    if(abo -> rd != NULL)  masFrecuentes(abo -> rd, maxFreq);
+    
     return maxFreq;
 }
 
-//Función que retorna una lista enlazada con las palabras de menor longitud
-//@return: puntero al primer elemento de la lista
+/* @func: construye una lista enlazada con las palabras más cortas
+ *        incluidas en las listas de los nodos de un árbol
+ * @params: abo => árbol a recorrer
+ *          minLong => un puntero a un nodo de tipo palabra inicial que irá
+ *                     recolectando las palabras con menos carácteres
+ * @return: un puntero al primer elemento de la lista construida(nodo inicial) 
+ */
 
 palabra* menosCaracteres(arbol* abo, palabra* minLong)
 {
     if(abo -> ri != NULL)  menosCaracteres(abo -> ri, minLong);
-    if(abo -> rd != NULL)  menosCaracteres(abo -> rd, minLong);
 
     palabra* ls =  abo -> l;
     while(ls != NULL){
@@ -340,17 +354,23 @@ palabra* menosCaracteres(arbol* abo, palabra* minLong)
         }
         ls = ls -> sig;
     }
-
+    
+    if(abo -> rd != NULL)  menosCaracteres(abo -> rd, minLong);
+    
     return minLong;
 }
 
-//Función que retorna una lista enlazada con las palabras de menor longitud
-//@return: puntero al primer elemento de la lista
+/* @func: construye una lista enlazada con las palabras más largas
+ *        incluidas en las listas de los nodos de un árbol
+ * @params: abo => árbol a recorrer
+ *          minLong => un puntero a un nodo de tipo palabra inicial que irá
+ *                     recolectando las palabras con más carácteres
+ * @return: un puntero al primer elemento de la lista construida(nodo inicial) 
+ */
 
 palabra* masCaracteres(arbol* abo, palabra* maxLong)
 {
     if(abo -> ri != NULL)  masCaracteres(abo -> ri, maxLong);
-    if(abo -> rd != NULL)  masCaracteres(abo -> rd, maxLong);
     
     palabra* ls =  abo -> l;
     while(ls != NULL){
@@ -370,10 +390,14 @@ palabra* masCaracteres(arbol* abo, palabra* maxLong)
         ls = ls -> sig;
     }
     
+    if(abo -> rd != NULL)  masCaracteres(abo -> rd, maxLong);
+    
     return maxLong;
 }
 
-//Función que elimina por completo un arbol
+/* @func: elimina de memoria un árbol binario completo
+ * @params: a => arbol a eliminar
+ * @return: void */
 
 void eliminarArbol(arbol* a)
 {
@@ -384,8 +408,10 @@ void eliminarArbol(arbol* a)
     delete a;
 }
 
-//Función que elimina un árbol actual y construye uno nuevo basado en una
-//nueva ruta de un archivo.
+/* @func: elimina un árbol actual y construye uno nuevo basado en una
+ *         nueva ruta de archivo.
+ * @params: abo => árbol a destruir
+ * @return: un puntero al nodo raíz del nuevo árbol construido */
 
 arbol* nuevoArbolArchivo(arbol* abo)
 {
@@ -405,8 +431,10 @@ arbol* nuevoArbolArchivo(arbol* abo)
     return nuevo_arbol;
 }
 
-//Función que imprime un menú con las distintas funcionalidades que ofrece
-//el programa.
+/* @func: interfaz para acceder a las distintas funcionalidades que ofrece
+ *        el programa.
+ * @params: abo => árbol sobre el que se trabajará inicialmente.
+ * @return: void */
 
 void menuOpciones(arbol* abo)
 {
@@ -435,13 +463,8 @@ void menuOpciones(arbol* abo)
             continue; 
         }
         else if(opcion == '1'){
-            
-            cout << "           palabra          ||  frecuencia   \n"
-                 << "============================================\n";
-                 
             imprimirListasArbol(abo);
             
-            cout << "\n\n";
         }
         else if(opcion == '2'){
             char inicio[30] = "_init_";
@@ -449,16 +472,12 @@ void menuOpciones(arbol* abo)
             palabra* min = nuevoNodoPalabra(inicio);
             max = masFrecuentes(abo, max);
             min = menosFrecuentes(abo, min);
-            cout << " palabras más repetidas     ||  frecuencia   \n"
-                 << "============================================\n";
-                 
-            imprimirListaPalabras(max -> sig);
             
-            cout << "\n\n"
-                 << " palabras menos repetidas   ||  frecuencia   \n"
-                 << "============================================\n";
-                 
-            imprimirListaPalabras(min -> sig);
+            char t1[30] = "palabras más repetidas";     
+            imprimirListaPalabras(max -> sig, t1);
+            
+            char t2[30] = "palabras menos repetidas";     
+            imprimirListaPalabras(min -> sig, t2);
             
             cout << "\n\n";
             
@@ -475,20 +494,17 @@ void menuOpciones(arbol* abo)
             min = menosCaracteres(abo, min);
             
             cout << "\n"
-                 << "Las palabras más largas del documento tienen " << max -> freq << " caracter(es).\n\n"
-                 << " palabras más largas       ||   frecuencia \n"
-                 << "============================================\n";
-                 
-            imprimirListaPalabras(max -> sig);
+                 << "Las palabras más largas del documento tienen " 
+                 << max -> freq << " caracter(es).\n\n";
             
-            cout << "\n\n"
-                 << "Las palabras más cortas del documento tienen " << min -> freq << " caracter(es).\n\n"
-                 << " palabras más cortas        ||  frecuencia  \n"
-                 << "============================================\n";
-                 
-            imprimirListaPalabras(min -> sig);
+            char t1[30] = "palabras más largas";
+            imprimirListaPalabras(max -> sig, t1);
             
-            cout << "\n\n";
+            cout << "Las palabras más cortas del documento tienen " 
+                 << min -> freq << " caracter(es).\n\n";
+                 
+            char t2[30] = "palabras más cortas";
+            imprimirListaPalabras(min -> sig, t2);
             
             eliminarLista(max);
             eliminarLista(min);
@@ -514,14 +530,23 @@ void menuOpciones(arbol* abo)
        
     }
 }
+
+/*****************************************************************************/
          
-// -- MAIN --
+/************************ MAIN ***********************************************/
 
 int main()
 {
-    char ruta_archivo[255];
+    cout << "|||||| ReadyRead v.0.0.1 - inspector de archivos |||||||||||||||||\n"
+         << "------------------------------------------------------------------\n"
+         << "                                                                  \n"
+         << "Ingrese la ruta del archivo que desea analizar:                   \n"
+         << ">>> ";
     
-    menuInicio(ruta_archivo);
+    char ruta_archivo[255];
+    cin >> ruta_archivo;
+    
+    cout << "\n\n";
     
     arbol* arbol_palabras = ConstruirABO(ruta_archivo);
     

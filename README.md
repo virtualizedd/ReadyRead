@@ -1,4 +1,4 @@
-\_---\_-- *ReadyRead* 
+\_---\_-- *ReadyRead v.0.0.1a* 
 ===
 \[Trabajo para el curso algoritmos y estructuras de datos\]
 
@@ -21,7 +21,7 @@ de un método recursivo para recorrer todos sus nodos.
 ---
 
 <br>
-Funcionalidades planificadas para la versión 0.0.1a:
+Funcionalidades incluidas en la versión 0.0.1a:
 
 * Listar todas las palabras presentes esn el archivo en forma alfabética
  indicando la frecuencia de aparición de cada una.
