@@ -1,17 +1,39 @@
-#ReadyRead
-
+\_---\_-- *ReadyRead v.0.0.1a* 
+===
 \[Trabajo para el curso algoritmos y estructuras de datos\]
 
->Lenguaje: C++ (estilo C)
+<br>
 
->Herramienta para obtener ciertos datos estadísticos acerca del 
+---
+
+**Lenguaje**: C++ (estilo C)
+
+---
+
+**Descripción**: Herramienta para obtener ciertos datos estadísticos acerca del 
 contenido de un archivo de texto.
 
-Funcionalidades planificadas para la versión 0.0.1:
+---
 
-* Listar todas las palabras presentes en el archivo en forma alfabética
+**Objetivo**: Puesta en práctica de una estructura de árbol binario ordenado y
+de un método recursivo para recorrer todos sus nodos.
+
+---
+
+<br>
+Funcionalidades incluidas en la versión 0.0.1a:
+
+* Listar todas las palabras presentes esn el archivo en forma alfabética
  indicando la frecuencia de aparición de cada una.
 
 * Imprimir la palabra más y menos frecuente.
 
 * Imprimir la palabra con mayor y menor número de carácteres.
+
+<br>
+
+Funcionalidades planificadas para la versión 0.0.2a:
+
+* Eliminar el nodo del árbol con la lista de palabras más breve
+
+* Permitir eliminar una palabra  
