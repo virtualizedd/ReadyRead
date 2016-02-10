@@ -24,6 +24,17 @@ struct arbol
     arbol* rd = NULL;
 };
 
+//Estructura que almacena un nodo del arbol y propiedades tales cómo
+//la longitud de la lista de palabras y el nivel en que se encuentra
+
+struct abo_nodo
+{
+    arbol* nodo = NULL;
+    arbol* padre = NULL;
+    int len;
+    int nivel;
+};
+
 /*****************************************************************************/
 
 /**************** FUNCIONES **************************************************/
@@ -184,10 +195,8 @@ arbol* insert_ABO(arbol* abo, char p[30])
 
 void eliminarLista(palabra* ls)
 {
-    if(ls -> sig != NULL){
-         eliminarLista(ls -> sig);
-         delete ls;
-     }
+    if(ls -> sig != NULL) eliminarLista(ls -> sig);
+    delete ls;
 }
 
 /* @func: construye un árbol binario ordenado (ABO) a partir de las palabras
@@ -408,9 +417,103 @@ void eliminarArbol(arbol* a)
     delete a;
 }
 
+/* @func: Recorre una lista enlazada y calcula el total de palabras
+ * @params: l => lista a recorrer
+ * @return: suma total de todas las frecuencias */
+
+int sumaFreq(palabra* l)
+{
+    int sum = 0;
+    while(l != NULL){
+        sum++;
+        l = l -> sig;
+    }
+    return sum;
+}
+
+/* @func: crea un nuevo objeto de tipo abo_nodo
+ * @params:
+ * @return: puntero al objeto creado */
+ 
+abo_nodo* nuevoABONodo()
+{
+    abo_nodo* an = new abo_nodo;
+    an -> nivel = 0;
+    an -> len = 0;
+    
+    return an;
+}
+ 
+/* @func: Recorre un árbol y determina cuál nodo tiene la lista con menos palabras.
+ *        Si hay más de un nodo con el mismo número de palabras, considera aquél
+ *        en un nivel más alto.
+ * @params: abo => árbol a recorrer
+ * @return: puntero al nodo con más palabras */
+
+abo_nodo* nodoMasPalabras(arbol* abo, abo_nodo* an = nuevoABONodo(), int nivel = 0)
+{   
+    nivel++;
+    
+    if(abo -> ri != NULL) an = nodoMasPalabras(abo -> ri, an, nivel);
+    if(abo -> rd != NULL) an = nodoMasPalabras(abo -> rd, an, nivel);
+    
+    int n = sumaFreq(abo -> l);
+    
+    if((n <= an -> len or an -> len == 0) and nivel > (an -> nivel)){
+        an -> nodo = abo;
+        an -> nivel = nivel;
+        an -> len = n;
+    }
+    
+    return an;
+}
+
+/* @func: elimina un nodo de un árbol binario y lo reestructura
+ * @params: nodo => puntero al nodo que se desea eliminar
+ * @return: void */
+ 
+void insertNodoABO(arbol* abo, arbol* nodo)
+{
+    if(abo -> Letra > nodo -> Letra){
+        if(abo -> rd == NULL) abo -> rd = nodo;
+        else insertNodoABO(abo -> rd, nodo);
+    }
+    else if(abo -> Letra < nodo -> Letra){
+        if(abo -> ri == NULL) abo -> ri = nodo;
+        else insertNodoABO(abo -> ri, nodo);
+    }
+}
+
+void punteroPadreNULL(arbol* abo, abo_nodo* an)
+{
+    if(abo -> ri == an -> nodo) abo -> ri = NULL;
+    if(abo -> ri == an -> nodo) abo -> rd = NULL;
+    
+    if(abo -> ri != NULL) punteroPadreNULL(abo -> ri, an);
+    if(abo -> rd != NULL) punteroPadreNULL(abo -> rd, an);
+}
+
+void  eliminarABONodo(arbol* abo, abo_nodo* an)
+{
+    arbol *izq = NULL;
+    arbol *der = NULL;
+    
+    if(an -> nodo -> ri != NULL) izq = an -> nodo -> ri;
+    if(an -> nodo -> rd != NULL) der = an -> nodo -> rd;
+    
+    punteroPadreNULL(abo, an);
+    eliminarLista(an -> nodo -> l);
+    delete (an -> nodo);
+    
+    if(izq != NULL) insertNodoABO(abo, izq);
+    if(der != NULL) insertNodoABO(abo, der);
+    
+    delete an;
+}
+
 /* @func: elimina un árbol actual y construye uno nuevo basado en una
  *         nueva ruta de archivo.
- * @params: abo => árbol a destruir
+ * @params: abo => árbol a destruir 
  * @return: un puntero al nodo raíz del nuevo árbol construido */
 
 arbol* nuevoArbolArchivo(arbol* abo)
@@ -537,6 +640,7 @@ void menuOpciones(arbol* abo)
 
 int main()
 {
+    
     cout << "|||||| ReadyRead v.0.0.1 - inspector de archivos |||||||||||||||||\n"
          << "------------------------------------------------------------------\n"
          << "                                                                  \n"
@@ -549,6 +653,14 @@ int main()
     cout << "\n\n";
     
     arbol* arbol_palabras = ConstruirABO(ruta_archivo);
+    
+    //menuOpciones(arbol_palabras);
+    abo_nodo* hola = nodoMasPalabras(arbol_palabras);
+    
+    cout << hola -> nodo -> Letra << "\n";
+    cout << hola -> nodo -> rd << "\n";
+    
+    eliminarABONodo(arbol_palabras, hola);
     
     menuOpciones(arbol_palabras);
     
