@@ -450,12 +450,12 @@ abo_nodo* nuevoABONodo()
  * @params: abo => árbol a recorrer
  * @return: puntero al nodo con más palabras */
 
-abo_nodo* nodoMasPalabras(arbol* abo, abo_nodo* an = nuevoABONodo(), int nivel = 0)
+abo_nodo* nodoMenosPalabras(arbol* abo, abo_nodo* an = nuevoABONodo(), int nivel = 0)
 {   
     nivel++;
     
-    if(abo -> ri != NULL) an = nodoMasPalabras(abo -> ri, an, nivel);
-    if(abo -> rd != NULL) an = nodoMasPalabras(abo -> rd, an, nivel);
+    if(abo -> ri != NULL) an = nodoMenosPalabras(abo -> ri, an, nivel);
+    if(abo -> rd != NULL) an = nodoMenosPalabras(abo -> rd, an, nivel);
     
     int n = sumaFreq(abo -> l);
     
@@ -487,7 +487,7 @@ void insertNodoABO(arbol* abo, arbol* nodo)
 void punteroPadreNULL(arbol* abo, abo_nodo* an)
 {
     if(abo -> ri == an -> nodo) abo -> ri = NULL;
-    if(abo -> ri == an -> nodo) abo -> rd = NULL;
+    if(abo -> rd == an -> nodo) abo -> rd = NULL;
     
     if(abo -> ri != NULL) punteroPadreNULL(abo -> ri, an);
     if(abo -> rd != NULL) punteroPadreNULL(abo -> rd, an);
@@ -509,6 +509,61 @@ void  eliminarABONodo(arbol* abo, abo_nodo* an)
     if(der != NULL) insertNodoABO(abo, der);
     
     delete an;
+}
+
+/* @func: elimina una palabra de una lista enlazada de palabras
+ * @params: ls => lista de la cuál remover la palabra
+ *          p => palabra a eliminar
+ * @return: un puntero al inicio de la lista o un puntero a NULL si la palabra
+ *          no es encontrada */
+
+palabra* eliminarPalabraLista(palabra* ls, char p[30])
+{
+    palabra* n = NULL;
+    palabra* inicio = ls;
+    if(strcmp(ls -> pal, p) == 0){
+        if(ls -> sig != NULL)  n = ls -> sig;
+        delete ls;
+        return n;
+    }
+    else{
+        if(ls -> sig != NULL){
+            n = ls;
+            ls = ls -> sig;
+        }
+        else return n;
+        
+        while(ls != NULL){
+            if(strcmp(ls -> pal, p) == 0){
+                n -> sig =  ls -> sig;
+                delete ls;
+                return inicio;
+            }
+            n = ls;
+            ls = ls -> sig;
+        }
+        return (n -> sig);
+    }
+}
+
+/* @func: elimina una palabra de un árbol binario
+ * @params: abo => árbol al cual eliminar la palabra
+ *          p => palabra a eliminar
+ * @return: void*/
+
+palabra* eliminarPalabraABO(arbol* abo, char p[30])
+{
+    if(p[0] == abo -> Letra){
+        palabra* r = eliminarPalabraLista(abo -> l, p);
+        abo -> l = r;
+        return r;
+    }
+    else{
+        palabra* r;
+        if(abo -> ri != NULL)r = eliminarPalabraABO(abo -> ri, p);
+        if(abo -> rd != NULL)r = eliminarPalabraABO(abo -> rd, p);
+        return r;
+    }
 }
 
 /* @func: elimina un árbol actual y construye uno nuevo basado en una
@@ -547,6 +602,8 @@ void menuOpciones(arbol* abo)
              << "       junto a su frecuencia de aparición\n"
              << "   [2] Saber cuáles son las palabras más y menos frecuentes                  \n"
              << "   [3] Saber cuáles son las palabras con mayor y menor número de carácteres  \n"
+             << "   [4] Elimina del ABO generado el nodo con la lista más breve de palabras   \n"
+             << "   [5] Elimina una palabra del ABO                                           \n"
              << "   [n] Ingresar una nueva ruta \n"
              << "   [x] Salir de la aplicación \n\n"
              << "Ingresa el [<codigo>] listado a la izquierda de la opción que deseas ejecutar\n"
@@ -612,6 +669,26 @@ void menuOpciones(arbol* abo)
             eliminarLista(max);
             eliminarLista(min);
         }
+        else if(opcion == '4'){
+            abo_nodo* nodo_eliminar = nodoMenosPalabras(abo);
+            
+            cout << " El nodo con la lista más breve de palabras corresponde al nodo con\n el caŕacter " 
+                 << nodo_eliminar -> nodo -> Letra << ". ";
+            
+            eliminarABONodo(abo, nodo_eliminar);
+            
+            cout << " El nodo ha sido eliminado correctamente.\n\n";
+        }
+        else if(opcion == '5'){
+            char p[30];
+            cout << "¿Qué palabra desea eliminar?\n>>> ";
+            cin >> p;
+            formatearPalabra(p);
+            palabra* r = eliminarPalabraABO(abo, p);
+            if(r == NULL) cout << "\n\nLa palabra " << p << " no se encontraba en la lista\n";
+            else cout << "\nLa palabra se ha eliminado correctamente.\n\n";
+        }
+        
             
         
         cout << "¿Deseas realizar una nueva operación sobre este archivo?\n"
@@ -653,14 +730,6 @@ int main()
     cout << "\n\n";
     
     arbol* arbol_palabras = ConstruirABO(ruta_archivo);
-    
-    //menuOpciones(arbol_palabras);
-    abo_nodo* hola = nodoMasPalabras(arbol_palabras);
-    
-    cout << hola -> nodo -> Letra << "\n";
-    cout << hola -> nodo -> rd << "\n";
-    
-    eliminarABONodo(arbol_palabras, hola);
     
     menuOpciones(arbol_palabras);
     
